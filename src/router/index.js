@@ -18,7 +18,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../components/CrowdFund.vue')
   },
   {
-    path: '/list',
+    path: '/list/',
     name: 'List',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

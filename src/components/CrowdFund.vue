@@ -241,7 +241,7 @@ export default {
       })
     },
     crowdList(){
-      this.$router.push({ path: '/list' })
+      this.$router.push({ path: '/list/' })
     }
   }
 }

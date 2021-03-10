@@ -1,5 +1,5 @@
 <template>
-  <div class="List">
+  <div ref="list" class="List">
     <h1>Players</h1>
     <ul>
       <li v-for="(v, k) of list" :key="k">
@@ -8,6 +8,7 @@
         <span class="sfund">fund: {{ v.price }} ether</span>
       </li>
     </ul>
+    <a ref="more" href="#" :style="dis" v-on:click="fetchList(list.length)">{{btnText}}</a>
   </div>
 </template>
 <script>
@@ -16,6 +17,8 @@ export default {
   data() {
     return {
       list: [],
+      dis: "pointer-events:auto",
+      btnText: 'More'
     };
   },
   mounted() {
@@ -47,22 +50,46 @@ export default {
       return result;
     },
     initData() {
-      getCrowdfundList({ first: 10 })
-        .then((res) => {
-          let players = res.data.playerEntities;
-          let len = players.length;
-          for (let i = 0; i < len; ++i) {
-            this.list.push({
-              id: players[i].id,
-              date: this.stapToDate(players[i].date),
-              price: players[i].price / 1e18,
-            });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      console.log('initData')
+      this.fetchList()
     },
+    scrollToBottom(top) {
+      setTimeout(() => {
+        window.scroll({
+          left: 0,
+          top,
+          behavior: 'smooth'
+        })
+      }, 50)
+
+    },
+    fetchList(skip=0,first=4) {
+      console.log('skip', skip)
+      getCrowdfundList({ first: first, skip: skip })
+      .then((res) => {
+        let players = res.data.playerEntities;
+        let len = players.length;
+        for (let i = 0; i < len; ++i) {
+          this.list.push({
+            id: players[i].id,
+            date: this.stapToDate(players[i].date),
+            price: players[i].price / 1e18,
+          });
+        }
+        console.log(this.$refs.list.style.scrollTop)
+        console.log(this.$refs.list.scrollHeight)
+        // this.$refs.list.style.scrollTop = this.$refs.list.scrollHeight;
+        this.scrollToBottom(this.$refs.list.scrollHeight)
+        if(len<first){
+          this.$refs.more.setAttribute("disabled",true)
+          this.btnText = "No more ~~"
+          this.dis = "pointer-events:none;color: #678172;text-decoration:none;"
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
   },
 };
 </script>
@@ -79,14 +106,14 @@ ul {
 }
 li {
   /* display: inline-block; */
-  margin: 10px 10px;
+  margin: 10px 3px;
   text-align: left;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   line-height: 30px;
   position: relative;
-  box-shadow: 10px 10px 5px #678172;
+  box-shadow: 5px 5px 4px #678172;
 }
 li::before {
   content: '';
