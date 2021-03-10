@@ -8,7 +8,7 @@
         <span class="sfund">fund: {{ v.price }} ether</span>
       </li>
     </ul>
-    <a ref="more" href="#" :style="dis" v-on:click="fetchList(list.length)">{{btnText}}</a>
+    <a ref="more" href="javascript:void(0)" :style="dis" v-on:click="fetchList(list.length)">{{btnText}}</a>
   </div>
 </template>
 <script>
@@ -22,7 +22,11 @@ export default {
     };
   },
   mounted() {
+    this.list = []
     this.initData();
+  },
+  updated() {
+    this.scrollToBottom(this.$refs.list.scrollHeight)
   },
   methods: {
     stapToDate(datetime) {
@@ -60,8 +64,7 @@ export default {
           top,
           behavior: 'smooth'
         })
-      }, 50)
-
+      }, 5)
     },
     fetchList(skip=0,first=4) {
       console.log('skip', skip)
@@ -69,17 +72,15 @@ export default {
       .then((res) => {
         let players = res.data.playerEntities;
         let len = players.length;
+        const temp = []
         for (let i = 0; i < len; ++i) {
-          this.list.push({
+          temp.push({
             id: players[i].id,
             date: this.stapToDate(players[i].date),
             price: players[i].price / 1e18,
           });
         }
-        console.log(this.$refs.list.style.scrollTop)
-        console.log(this.$refs.list.scrollHeight)
-        // this.$refs.list.style.scrollTop = this.$refs.list.scrollHeight;
-        this.scrollToBottom(this.$refs.list.scrollHeight)
+        this.list.push(...temp)
         if(len<first){
           this.$refs.more.setAttribute("disabled",true)
           this.btnText = "No more ~~"
