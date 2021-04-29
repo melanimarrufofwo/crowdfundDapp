@@ -42,7 +42,10 @@
 </template>
 
 <script>
+import qs from 'qs'
+import axios from 'axios'
 const Web3 = require('web3')
+
 import {address, ABI} from '../contracts/Crowdfunding'
 export default {
   name: 'CrowdFund',
@@ -169,19 +172,25 @@ export default {
         }
       });
     },
-    join(){
+    async join(){
       if(new Date(this.endTimeStamp) < new Date() && this.closed){
         console.log("众筹已结束!")
         return
       }
-
+      await this.web3.eth.getTransactionCount(this.account).then(count=>{
+        this.nonce = count
+        console.log(count)
+      })
+      
       this.web3.eth.sendTransaction({
         from: this.account,
         value: this.web3.utils.toWei(this.price),
-        gas: 75440,
-        to: address
+        to: address,
       }).on('transactionHash', (hash)=>{
         console.log(hash)
+        this.web3.eth.getTransaction(hash).then(res=>{
+          console.log(res)
+        })
       })
       .on('receipt', (receipt) => {
         // this.getCrowdInfo()
@@ -236,11 +245,55 @@ export default {
       .withdraw()
       .send({
         from: this.account
+      }).on('transactionHash', (hash)=>{
+        console.log(hash)
+        this.web3.eth.getTransaction(hash).then(res=>{
+          console.log(res)
+        })
       }).then(() => {
         this.getCrowdInfo()
       })
     },
     crowdList(){
+        // // 添加一个请求拦截器
+        // axios.defaults.withCredentials=true
+        // // document.Cookie1='token=54c76e7088be9501f329769191f1fadc'
+        // axios.interceptors.request.use(function (config) {
+        //   // config.Cookie2="token=54c76e7088be9501f329769191f1fadc"
+        //     // 在发送请求之前做些什么
+        //     return config;
+        //   }, function (error) {
+        //     // 对请求错误做些什么
+        //     return Promise.reject(error);
+        //   });
+
+        // // 添加响应拦截器
+        // axios.interceptors.response.use(function (response) {
+        //     // 对响应数据做点什么
+        //     return response;
+        //   }, function (error) {
+        //     // 对响应错误做点什么
+        //     return Promise.reject(error);
+        //   });
+
+      
+      axios({
+        method: "POST",
+        url: '/api/login',
+        data: qs.stringify({address:"0xEb231E78483697E55D11e46B92E8e6b0feAfb285"}),
+      })
+      .then(response => {  
+        console.log(response)
+      })
+
+      axios.post(
+        '/api/login',
+        qs.stringify({address:"0xEb231E78483697E55D11e46B92E8e6b0feAfb285"}),
+      )
+      .then(response => {  
+        console.log(response)
+      })
+
       this.$router.push({ path: '/list' })
     }
   }
