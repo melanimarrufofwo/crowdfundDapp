@@ -26,7 +26,7 @@ export default {
     this.initData();
   },
   updated() {
-    this.scrollToBottom(this.$refs.list.scrollHeight)
+    this.scrollToBottom(this.$refs.logs.scrollHeight)
   },
   methods: {
     stapToDate(datetime) {
