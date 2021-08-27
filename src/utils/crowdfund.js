@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import apolloClient from '../utils/graphql'
+import burnApolloClient from '../utils/burnVoucher'
 
 export function getCrowdfundList(params) {
     console.log(params)
@@ -16,3 +17,20 @@ export function getCrowdfundList(params) {
      variables: params
     })
    }
+
+export function getBurnLogs(params) {
+    console.log(params)
+    return burnApolloClient.query({
+        query: gql`query ($first: Int!,$skip: Int!) {
+            logs(first: $first, skip: $skip) {
+                id
+                from
+                token
+                mid
+                amount
+                timestamp
+            }
+        }`,
+        variables: params
+    })
+}

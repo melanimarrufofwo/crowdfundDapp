@@ -18,6 +18,22 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../components/CrowdFund.vue')
   },
   {
+    path: '/chart',
+    name: 'Chart',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "list" */ '../views/RandomChart.vue')
+  },
+  {
+    path: '/logs',
+    name: 'Logs',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "list" */ '../views/logs.vue')
+  },
+  {
     path: '/list',
     name: 'List',
     // route level code-splitting
